@@ -4,7 +4,7 @@
 const iframe = document.getElementById("preview");
 
 // Load the test HTML and CSS from the simulated message file
-fetch(`test-message.json?t=${Date.now()}`) // cache-busting query param
+fetch(`test-receipt.json?t=${Date.now()}`) // cache-busting query param
   .then(response => {
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
