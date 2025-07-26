@@ -1,29 +1,15 @@
-// script.js
-
-// Select the preview iframe
-const iframe = document.getElementById("preview");
-
-// Load the test HTML and CSS from the simulated message file
-fetch(`test-receipt.json?t=${Date.now()}`) // cache-busting query param
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    return response.json();
+fetch("test-receipt.json?t=" + Date.now())
+  .then(res => res.json())
+  .then(({ htmlFile, css }) => {
+    return Promise.all([
+      fetch(htmlFile).then(res => res.text()),
+      Promise.resolve(css)
+    ]);
   })
-  .then(({ html, css }) => {
-    // Inject the HTML and CSS into the iframe
+  .then(([html, css]) => {
+    const iframe = document.getElementById("preview");
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     doc.open();
-    doc.write(`<style>@import url(${css})</style>${html}`);
-    doc.close();
-  })
-  .catch(error => {
-    console.error("Failed to load test data:", error);
-
-    // Optional: fallback content or error message in iframe
-    const doc = iframe.contentDocument || iframe.contentWindow.document;
-    doc.open();
-    doc.write(`<body><p style="color:red;">Error loading test data. Again</p></body>`);
+    doc.write(`<style>@import: url(${css});</style>${html}`);
     doc.close();
   });
