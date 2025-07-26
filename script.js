@@ -15,7 +15,7 @@ fetch(`test-receipt.json?t=${Date.now()}`) // cache-busting query param
     // Inject the HTML and CSS into the iframe
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     doc.open();
-    doc.write(`<style>${css}</style>${html}`);
+    doc.write(`<style>@import url(${css})</style>${html}`);
     doc.close();
   })
   .catch(error => {
