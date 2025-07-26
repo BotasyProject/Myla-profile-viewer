@@ -24,6 +24,6 @@ fetch(`test-receipt.json?t=${Date.now()}`) // cache-busting query param
     // Optional: fallback content or error message in iframe
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     doc.open();
-    doc.write(`<body><p style="color:red;">Error loading test data.</p></body>`);
+    doc.write(`<body><p style="color:red;">Error loading test data. Again</p></body>`);
     doc.close();
   });
