@@ -1,9 +1,7 @@
-// script.js
-
 const iframe = document.getElementById("preview");
 
-// Load the simulated message from test-receipt.json
-fetch(`test-receipt.json?t=${Date.now()}`) // Add ?t=... to bypass GitHub Pages cache
+// Load the simulated message containing file URLs
+fetch(`test-receipt.json?t=${Date.now()}`) // Cache-busting
   .then(response => {
     if (!response.ok) {
       throw new Error(`Failed to load test-receipt.json: ${response.status}`);
@@ -11,27 +9,34 @@ fetch(`test-receipt.json?t=${Date.now()}`) // Add ?t=... to bypass GitHub Pages 
     return response.json();
   })
   .then(({ htmlFile, cssFile }) => {
-    // Load the actual HTML and CSS files from the message
-    return Promise.all([
-      fetch(htmlFile).then(res => res.text()),
-      Promise.resolve(cssFile)
-    ]);
+    // Fetch the actual HTML content
+    return fetch(htmlFile)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Failed to load HTML file: ${res.status}`);
+        }
+        return res.text();
+      })
+      .then(htmlContent => {
+        return { htmlContent, cssFile }; // Pass both to next step
+      });
   })
-  .then(([htmlContent, cssFile]) => {
-    // Build a full document with a linked stylesheet
+  .then(({ htmlContent, cssFile }) => {
+    // Build a full HTML document string with a <link> to the stylesheet
     const fullDocument = `
       <!DOCTYPE html>
       <html>
-      <head>
-        <link rel="stylesheet" href="${cssFile}">
-      </head>
-      <body>
-        ${htmlContent}
-      </body>
+        <head>
+          <meta charset="UTF-8">
+          <link rel="stylesheet" href="${cssFile}">
+        </head>
+        <body>
+          ${htmlContent}
+        </body>
       </html>
     `;
 
-    // Inject the document into the iframe
+    // Write it into the iframe
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     doc.open();
     doc.write(fullDocument);
@@ -39,9 +44,9 @@ fetch(`test-receipt.json?t=${Date.now()}`) // Add ?t=... to bypass GitHub Pages 
   })
   .catch(error => {
     console.error("Preview error:", error);
-
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     doc.open();
-    doc.write(`<p style="color: red;">Error loading preview.</p>`);
+    doc.write(`<p style="color: red;">Error loading preview: ${error.message}</p>`);
     doc.close();
   });
+
