@@ -5,6 +5,10 @@ const urlParams = new URLSearchParams(window.location.search);
 const htmlFile = urlParams.get("htmlFile");
 const cssFile = urlParams.get("cssFile");
 
+// Debug logging
+console.log("Parsed htmlFile:", htmlFile);
+console.log("Parsed cssFile:", cssFile);
+
 if (!htmlFile || !cssFile) {
   const doc = iframe.contentDocument || iframe.contentWindow.document;
   doc.open();
