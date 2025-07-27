@@ -29,6 +29,7 @@ if (!htmlFile || !cssFile) {
         <html>
           <head>
             <meta charset="UTF-8">
+            <base href="${baseHref}">
             <link rel="stylesheet" href="${cssFile}">
           </head>
           <body>
